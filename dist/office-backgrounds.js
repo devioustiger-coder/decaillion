@@ -1,0 +1,108 @@
+/* Original seven 160x90 office background artworks supplied by the project owner.
+ * Floors ascend Lobby -> Rooftop in 100-point increments.
+ * This browser module renders each canvas once, using the original pixel art instructions.
+ */
+(()=>{
+ 'use strict';
+const W=160,H=90;let s=7;const rn=()=>(s=(s*16807)%2147483647)/2147483647;
+let x;
+const R=(a,b,w,h,c)=>{x.fillStyle=c;x.fillRect(a,b,w,h)};
+function sky(a,b,w,h,cols){const n=cols.length;cols.forEach((c,i)=>R(a,b+Math.floor(h*i/n),w,Math.ceil(h/n),c))}
+function skyline(a,b,w,h,col,lit){let p=a;while(p<a+w){const bw=6+Math.floor(rn()*7),bh=8+Math.floor(rn()*(h*0.7));R(p,b+h-bh,bw,bh,col);if(lit)for(let wx=p+1;wx<p+bw-1;wx+=2)for(let wy=b+h-bh+2;wy<b+h-1;wy+=3)if(rn()>.55)R(wx,wy,1,1,lit);p+=bw+1}}
+function win(a,b,w,h,cols,sk,lit){x.save();x.beginPath();x.rect(a,b,w,h);x.clip();sky(a,b,w,h,cols);skyline(a,b,w,h,sk,lit);x.restore();R(a-1,b-1,w+2,1,'#e8e8e8');R(a-1,b+h,w+2,2,'#c7c7c7');R(a-1,b-1,1,h+3,'#e8e8e8');R(a+w,b-1,1,h+3,'#c7c7c7');R(a+Math.floor(w/2),b,1,h,'#e8e8e8')}
+function plant(a,b){R(a,b+8,8,6,'#a8553a');R(a+1,b+8,6,1,'#c46a4a');R(a+3,b,2,8,'#2f7d3b');R(a,b+1,3,3,'#3fa34d');R(a+5,b+1,3,3,'#3fa34d');R(a+1,b-2,3,3,'#4cc25c');R(a+4,b-3,3,3,'#3fa34d')}
+function floorPlanks(y,c1,c2){R(0,y,W,H-y,c1);for(let i=y+4;i<H;i+=5)R(0,i,W,1,c2);for(let i=y+4;i<H;i+=5)for(let j=(i/5%2)*12;j<W;j+=24)R(j,i-4,1,4,c2)}
+
+const levels=[
+['L1 · Lobby','marble floor, reception, big windows',()=>{
+ R(0,0,W,58,'#d9cfc0');R(0,56,W,3,'#a99d8a');
+ for(let i=0;i<8;i++)for(let j=0;j<12;j++)R(j*14-(i%2)*7,59+i*4,14,4,(i+j)%2?'#e8e2d6':'#bdb6a8');
+ win(6,10,34,34,['#8ecbf0','#a9d8f3','#c9e6f7'],'#6f93b3','#f6e58d');win(120,10,34,34,['#8ecbf0','#a9d8f3','#c9e6f7'],'#6f93b3','#f6e58d');
+ R(52,10,56,26,'#1d2d50');R(53,11,54,1,'#3b4f80');R(72,14,16,16,'#f28c28');R(76,18,8,8,'#1d2d50');R(78,20,4,4,'#f2f2f2');R(58,32,44,2,'#f2f2f2');
+ R(40,50,80,16,'#5b3a29');R(38,48,84,4,'#8a5a3c');R(40,64,80,2,'#3a2418');R(96,41,12,8,'#222');R(97,42,10,6,'#4aa3ff');R(60,43,10,5,'#fff');
+ plant(24,48);plant(128,48);R(30,70,20,2,'#8c8678');R(110,72,20,2,'#8c8678')}],
+['L2 · Cubicle Farm','rows of desks and monitors',()=>{
+ R(0,0,W,52,'#cfd8dc');R(0,50,W,2,'#9aa6ad');
+ for(const a of [10,60,110])win(a,8,40,26,['#9bd0f2','#b6dff6'],'#6f93b3','#f6e58d');
+ R(0,52,W,38,'#5c6b7a');for(let i=54;i<H;i+=6)R(0,i,W,1,'#546270');
+ for(let i=0;i<W;i+=20)R(i,0,12,2,'#f6f6e0');
+ for(const cy of [38,62])for(let k=0;k<4;k++){const cx=4+k*40;
+  R(cx,cy,34,24,'#9fb2c3');R(cx,cy,34,2,'#7f93a5');R(cx,cy+22,34,2,'#7f93a5');R(cx+2,cy+14,30,5,'#c9a77c');R(cx+2,cy+19,30,1,'#8a6d48');
+  R(cx+11,cy+5,12,9,'#222');R(cx+12,cy+6,10,7,['#4aa3ff','#7bd88f','#ffcf5c','#ff7b7b'][(k+cy)%4]);R(cx+16,cy+14,2,2,'#222');
+  R(cx+26,cy+11,3,3,'#e45f5f');R(cx+3,cy+11,5,3,'#fff')}
+ plant(150,40)}],
+['L3 · Marketing Studio','pinboards, charts, bean bags',()=>{
+ R(0,0,W,56,'#f3e1c7');R(0,54,W,2,'#c9b08a');floorPlanks(56,'#9c7a54','#876745');
+ R(8,10,40,28,'#7a5530');R(9,11,38,26,'#b98a54');const sc=['#ffd23f','#ff6b9d','#6bd3ff','#9be564','#ff9f45','#c79bff'];
+ for(let i=0;i<6;i++)R(12+(i%3)*12,14+Math.floor(i/3)*11,9,8,sc[i]);
+ R(52,12,38,24,'#8c8c8c');R(53,13,36,22,'#fafafa');[10,16,12,20].forEach((h,i)=>R(58+i*8,33-h,5,h,['#f28c28','#4aa3ff','#7bd88f','#e45f5f'][i]));R(56,16,1,17,'#555');
+ win(98,8,54,38,['#a7dcf5','#c4e8f8','#f9e3c0'],'#7a9ab5','#fff3a0');
+ R(14,66,22,12,'#ff6b9d');R(16,64,18,4,'#ff8fb7');R(58,72,22,12,'#35c4b0');R(60,70,18,4,'#5fe0cf');
+ R(104,62,36,4,'#e8e0d0');R(108,66,3,12,'#7a5f40');R(134,66,3,12,'#7a5f40');R(112,56,10,6,'#f28c28');plant(144,62)}],
+['L4 · Break Room','kitchen, vending machine, daylight windows',()=>{
+ R(0,0,W,58,'#e6efe3');R(0,56,W,3,'#b7c4b3');
+ for(let i=0;i<4;i++)for(let j=0;j<17;j++)R(j*10-(i%2)*5,59+i*8,10,8,(i+j)%2?'#d8d2c4':'#bdb6a8');
+ win(104,10,48,30,['#8ecbf0','#a9d8f3','#c9e6f7'],'#6f93b3','#f6e58d');
+ R(6,20,16,40,'#cfd6dc');R(6,38,16,1,'#8e979e');R(18,26,2,8,'#8e979e');R(18,42,2,8,'#8e979e');R(8,22,4,3,'#e45f5f');
+ R(24,8,56,14,'#a98a63');for(let k=0;k<4;k++){R(25+k*14,9,12,12,'#b99a73');R(35+k*14,14,1,3,'#5a4630')}
+ R(24,40,56,20,'#7a5f40');R(24,38,56,3,'#d9d2c4');R(24,48,56,1,'#5a4630');R(52,48,1,12,'#5a4630');
+ R(30,30,14,8,'#333');R(31,31,9,6,'#6b8fa6');R(60,32,6,6,'#222');R(62,28,2,4,'#222');R(66,34,4,4,'#e45f5f');R(40,37,10,1,'#aab4bb');
+ R(84,22,18,38,'#c0392b');R(86,25,14,22,'#cfe8f5');for(let r=0;r<3;r++)for(let c=0;c<3;c++)R(87+c*4,27+r*7,3,5,['#ffd23f','#6bd3ff','#9be564','#ff9f45'][(r+c)%4]);R(86,50,14,5,'#7a2118');
+ R(66,12,10,10,'#fff');R(67,13,8,8,'#f2f2f2');R(70,14,1,4,'#222');R(70,17,3,1,'#222');
+ R(44,68,36,3,'#e8e0d0');R(60,71,3,10,'#7a5f40');R(54,81,15,2,'#7a5f40');R(40,72,8,4,'#35c4b0');R(40,76,2,6,'#555');R(76,72,8,4,'#f28c28');R(80,76,2,6,'#555');R(58,65,6,3,'#fff');
+ plant(138,50);plant(4,64)}],
+['L5 · Boardroom','long table, projector screen',()=>{
+ R(0,0,W,60,'#3b2a22');for(let i=0;i<W;i+=20){R(i+1,4,18,52,'#46332a');R(i,0,1,60,'#2a1d17')}
+ R(0,56,W,4,'#24180f');R(0,60,W,30,'#4a3b36');for(let i=62;i<H;i+=4)R(0,i,W,1,'#42342f');
+ R(46,8,68,34,'#cfcfcf');R(48,10,64,30,'#f4f7fb');
+ const pts=[[52,34],[60,30],[68,32],[78,24],[88,26],[98,18],[106,14]];pts.forEach(([a,b],i)=>{R(a,b,3,3,'#e45f5f');if(i){const[pa,pb]=pts[i-1];for(let t=0;t<=1;t+=.1)R(Math.round(pa+(a-pa)*t),Math.round(pb+(b-pb)*t),1,1,'#e45f5f')}});
+ R(52,36,56,1,'#aaa');R(52,12,1,24,'#aaa');R(78,2,4,4,'#555');
+ for(const a of [22,138]){R(a,0,1,6,'#d9b45a');R(a-4,6,9,3,'#f4d98a')}
+ for(let k=0;k<6;k++){R(22+k*18,48,10,12,'#1b1b1b');R(23+k*18,49,8,3,'#333')}
+ R(14,60,132,12,'#6b4428');R(12,58,136,4,'#8b5a35');R(16,72,4,10,'#3a2418');R(140,72,4,10,'#3a2418');
+ for(let k=0;k<6;k++){R(26+k*18,74,10,8,'#1b1b1b');R(27+k*18,82,8,3,'#111')}
+ R(70,56,20,3,'#ddd');R(34,56,6,3,'#fff');R(120,56,6,3,'#fff')}],
+['L6 · Executive Suite','sunset view, desk, bookshelf',()=>{
+ R(0,0,W,60,'#2d3a4a');R(0,58,W,2,'#1b2530');
+ win(34,6,92,46,['#6d597a','#b56576','#e56b6f','#f4a261','#ffd29d'],'#3a2f4a','#ffe08a');
+ R(4,10,24,54,'#4a2f1e');for(let r=0;r<5;r++){R(5,12+r*10,22,1,'#2a1a10');let p=6;while(p<26){const w=2+Math.floor(rn()*2);R(p,13+r*10-0,w,8,['#c0392b','#2e86c1','#d4ac0d','#1e8449','#7d3c98'][Math.floor(rn()*5)]);p+=w+1}}
+ R(0,60,W,30,'#5a4636');for(let i=62;i<H;i+=5)R(0,i,W,1,'#4e3c2e');
+ R(34,70,92,16,'#7a1f2b');R(36,72,88,12,'#8f2a38');R(34,70,92,1,'#d4af37');R(34,85,92,1,'#d4af37');
+ R(72,44,16,18,'#111');R(74,46,12,3,'#222');
+ R(46,58,68,4,'#8a5a3c');R(48,62,64,10,'#3a2418');R(50,64,18,6,'#2a1a10');R(94,58,10,4,'#222');R(95,52,8,6,'#222');R(96,53,6,4,'#4aa3ff');R(52,56,4,2,'#d4af37');
+ R(134,12,14,18,'#d4af37');R(136,14,10,14,'#5a7ea8');plant(136,48);R(6,66,0,0,'#000')}],
+['R · Rooftop','night skyline, water tank, string lights',()=>{
+ sky(0,0,W,64,['#0b1030','#131a45','#1d2759','#2b3470','#3d4488']);
+ for(let i=0;i<50;i++)R(Math.floor(rn()*W),Math.floor(rn()*40),1,1,rn()>.7?'#fff6b0':'#cfd6ff');
+ R(128,8,10,10,'#f6f1cf');R(131,8,7,10,'#0b1030');R(129,9,8,8,'#f6f1cf');R(132,8,6,10,'#1d2759');
+ skyline(0,28,W,36,'#1a1f3d','#ffd966');
+ R(0,62,W,5,'#6b707a');R(0,62,W,1,'#8d929c');R(0,67,W,23,'#4b4f58');for(let i=70;i<H;i+=6)R(0,i,W,1,'#42464f');
+ R(14,48,18,12,'#8e949e');R(14,48,18,2,'#b0b6c0');R(18,52,10,6,'#6e747e');R(20,53,6,4,'#555');
+ R(110,34,24,18,'#7a4a32');R(110,34,24,2,'#a0654a');R(111,42,22,1,'#4e2e1e');R(112,52,2,10,'#555');R(130,52,2,10,'#555');R(120,28,4,6,'#555');
+ for(let i=0;i<W;i+=2){const y=44+Math.round(Math.sin(i/160*Math.PI*3)*3+3);R(i,y,2,1,'#555')}
+ for(let i=8;i<W;i+=14){const y=44+Math.round(Math.sin(i/160*Math.PI*3)*3+3);R(i,y+1,2,3,['#ffd23f','#ff6b9d','#6bd3ff','#9be564'][(i/14|0)%4])}
+ R(54,72,40,4,'#a0724a');R(56,76,3,6,'#6e4a2e');R(89,76,3,6,'#6e4a2e');R(54,66,40,3,'#a0724a');R(56,68,2,4,'#6e4a2e');R(90,68,2,4,'#6e4a2e');
+ R(126,70,16,4,'#6b707a');R(130,66,8,4,'#8e949e');R(10,72,22,3,'#2f7d3b');R(8,74,26,6,'#a8553a')}]
+];
+
+ const ART_FLOOR_NAMES = levels.map(v=>v[0].split(' · ')[1] || v[0]);
+ const canvases=[];
+ function getCanvas(floor){
+   const i=Math.min(6,Math.max(0,Math.floor(Number(floor)||0)));
+   if(!canvases[i]){
+     const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+     x=canvas.getContext('2d');x.imageSmoothingEnabled=false;s=7;
+     levels[i][2]();canvases[i]=canvas;
+   }
+   return canvases[i];
+ }
+ function draw(ctx,floor,offset,viewWidth,viewHeight){
+   const art=getCanvas(floor);
+   ctx.save();ctx.imageSmoothingEnabled=false;
+   // A complete, distinct room is visible on each floor; animation moves it down
+   // as the elevator rises to the next room above.
+   ctx.drawImage(art,0,Math.round(offset),viewWidth,viewHeight);
+   ctx.restore();
+ }
+ window.OfficeBackgrounds={floorNames:ART_FLOOR_NAMES,draw,getCanvas};
+})();
