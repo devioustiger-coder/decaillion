@@ -1,8 +1,19 @@
-(()=>{const c=document.getElementById('ocean-world'),x=c.getContext('2d');let W,H,p=0,target=0,start=0,from=0,resolve=null,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,cb=()=>{},moving=false,duration=1800,travel=0,burstAt=-10000,burstPoints=0;function r(a,b,w,h,col){x.fillStyle=col;x.fillRect(Math.round(a),Math.round(b),Math.ceil(w),Math.ceil(h));}function resize(){W=c.width=Math.ceil(innerWidth/3);H=c.height=Math.ceil(innerHeight/3);x.imageSmoothingEnabled=false;}function person(a,b,t){const walk=0;r(a+4,b,7,3,'#14182a');r(a+4,b+3,7,7,'#dca77c');r(a+10,b+5,2,2,'#eab98c');r(a+3,b+10,10,13,'#203e60');r(a+6,b+10,4,8,'#e2edf2');r(a+7,b+11,2,8,'#50c9f2');r(a+1,b+11,3,12,'#18314d');r(a+13,b+11,3,12,'#18314d');r(a+13,b+22,3,3,'#dca77c');r(a+4,b+23,4,10+walk,'#17263f');r(a+9,b+23,4,10-walk,'#17263f');r(a+3,b+32+walk,6,2,'#080c19');r(a+9,b+32-walk,6,2,'#080c19');r(a+14,b+24,9,7,'#734a31');r(a+16,b+22,5,2,'#ac8352');}function frame(t){requestAnimationFrame(frame);if(moving){const q=Math.min(1,(t-start)/duration),e=q*q*(3-2*q);travel=e;p=from+(target-from)*e;cb(Math.round(p));if(q===1){moving=false;travel=0;const done=resolve;resolve=null;done?.();}}x.clearRect(0,0,W,H);const z=Math.min(6,Math.floor(p/1000));
-const offset=(!reduced&&z<6)?(p%1000)/1000*H:0;
+(()=>{const c=document.getElementById('ocean-world'),x=c.getContext('2d');let W,H,p=0,target=0,start=0,from=0,resolve=null,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,cb=()=>{},moving=false,duration=1800,travel=0,burstAt=-10000,burstPoints=0;function r(a,b,w,h,col){x.fillStyle=col;x.fillRect(Math.round(a),Math.round(b),Math.ceil(w),Math.ceil(h));}function resize(){W=c.width=Math.ceil(innerWidth/3);H=c.height=Math.ceil(innerHeight/3);x.imageSmoothingEnabled=false;}function person(a,b,t){const walk=0;r(a+4,b,7,3,'#14182a');r(a+4,b+3,7,7,'#dca77c');r(a+10,b+5,2,2,'#eab98c');r(a+3,b+10,10,13,'#203e60');r(a+6,b+10,4,8,'#e2edf2');r(a+7,b+11,2,8,'#50c9f2');r(a+1,b+11,3,12,'#18314d');r(a+13,b+11,3,12,'#18314d');r(a+13,b+22,3,3,'#dca77c');r(a+4,b+23,4,10+walk,'#17263f');r(a+9,b+23,4,10-walk,'#17263f');r(a+3,b+32+walk,6,2,'#080c19');r(a+9,b+32-walk,6,2,'#080c19');r(a+14,b+24,9,7,'#734a31');r(a+16,b+22,5,2,'#ac8352');}function frame(t){requestAnimationFrame(frame);if(moving){const q=Math.min(1,(t-start)/duration),e=q*q*(3-2*q);travel=e;p=from+(target-from)*e;cb(Math.round(p));if(q===1){moving=false;travel=0;const done=resolve;resolve=null;done?.();}}x.clearRect(0,0,W,H);const floorForDepth=depth=>Math.min(6,Math.max(0,Math.floor(depth/1000)));
+const z=floorForDepth(p);
 if(document.body?.classList?.contains?.('playing')&&window.OfficeBackgrounds){
-  window.OfficeBackgrounds.draw(x,z,offset,W,H);
-  if(offset>0)window.OfficeBackgrounds.draw(x,z+1,offset-H,W,H);
+  const fromFloor=floorForDepth(from),toFloor=floorForDepth(target);
+  // Hold one complete room throughout each 100-point band.
+  // Slide between the supplied pixel-art rooms only while changing floors.
+  if(moving&&!reduced&&toFloor>fromFloor){
+    const floors=toFloor-fromFloor;
+    const progress=travel*floors;
+    const lower=Math.min(toFloor-1,fromFloor+Math.floor(progress));
+    const slide=Math.max(0,Math.min(1,progress-(lower-fromFloor)))*H;
+    window.OfficeBackgrounds.draw(x,lower,slide,W,H);
+    window.OfficeBackgrounds.draw(x,lower+1,slide-H,W,H);
+  }else{
+    window.OfficeBackgrounds.draw(x,z,0,W,H);
+  }
 }else{drawCity(t,0,0);}const ground=H*.76,a=W*.18;
 // The camera follows a real elevator car; floors pass downward as points move the car up.
 const left=a-12,top=ground-48,cw=45,ch=54;

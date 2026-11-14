@@ -23,3 +23,31 @@ test('original office pixel scenes render in seven ascending floors',()=>{
  assert.equal(canvasCount,7);
  bg.draw(target,6,0,640,360);assert.equal(canvasCount,7);
 });
+test('one background per 100 points, with no idle overlap and rooftop at 600+',async()=>{
+ const vm=require('node:vm'),fs=require('node:fs');
+ let frame,now=0;
+ const draws=[];
+ const ctx=new Proxy({createLinearGradient:()=>({addColorStop(){}})},{get:(o,k)=>o[k]||(()=>{})});
+ const canvas={getContext:()=>ctx,dataset:{}};
+ const scope={window:{Game:G,OfficeBackgrounds:{draw:(context,floor,offset)=>draws.push({floor,offset})}},
+  document:{getElementById:()=>canvas,body:{classList:{contains:name=>name==='playing',toggle(){}}}},
+  innerWidth:1200,innerHeight:900,matchMedia:()=>({matches:false}),
+  performance:{now:()=>now},requestAnimationFrame:f=>frame=f,addEventListener(){},Math,Promise};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../dist/ocean.js'),'utf8'),scope);
+ const O=scope.window.Ocean;
+ function paint(){draws.length=0;frame(now);return draws.map(v=>({floor:v.floor,offset:v.offset}));}
+ for(const score of [0,1,25,99,100,101,199,200,299,300,399,400,499,500,599,600,650,700]){
+   O.enter(score*10);
+   assert.deepEqual(paint(),[{floor:Math.min(6,Math.floor(score/100)),offset:0}],`score ${score}`);
+ }
+ O.enter(990);
+ const travel=O.dive(1000);
+ now+=300;
+ assert.deepEqual(paint().map(v=>v.floor),[0,1],'crossing 100 should slide only between adjacent rooms');
+ now+=6000;
+ assert.deepEqual(paint(),[{floor:1,offset:0}]);
+ await travel;
+ O.setReduced(true);
+ await O.dive(2000);
+ assert.deepEqual(paint(),[{floor:2,offset:0}], 'reduced motion should snap to the correct room');
+});
