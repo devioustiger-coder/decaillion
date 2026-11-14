@@ -51,3 +51,18 @@ test('one background per 100 points, with no idle overlap and rooftop at 600+',a
  await O.dive(2000);
  assert.deepEqual(paint(),[{floor:2,offset:0}], 'reduced motion should snap to the correct room');
 });
+
+test('landing screen renders the lobby artwork before starting a game',()=>{
+ const vm=require('node:vm'),fs=require('node:fs');
+ let frame;const draws=[];
+ const ctx=new Proxy({createLinearGradient:()=>({addColorStop(){}})},{get:(o,k)=>o[k]||(()=>{})});
+ const canvas={getContext:()=>ctx,dataset:{}};
+ const context={window:{Game:G,OfficeBackgrounds:{draw:(ctx,floor,offset)=>draws.push({floor,offset})}},
+   document:{getElementById:()=>canvas,body:{classList:{contains:()=>false,toggle(){}}}},
+   innerWidth:1200,innerHeight:900,matchMedia:()=>({matches:false}),
+   performance:{now:()=>0},requestAnimationFrame:f=>frame=f,addEventListener(){},Math,Promise};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../dist/ocean.js'),'utf8'),context);
+ frame(0);
+ assert.deepEqual(draws,[{floor:0,offset:0}],'homepage must show original pixel-art Lobby instead of old city');
+ assert.equal(canvas.dataset.zone,'LOBBY');
+});
