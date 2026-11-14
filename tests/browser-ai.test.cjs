@@ -5,11 +5,11 @@ const vm=require('node:vm');
 function harness(){
  let now=100000,resolve,reject;
  const el=new Map(),intervals=new Map(),saved={};let n=0;
- const element=s=>{if(!el.has(s))el.set(s,{innerHTML:'',textContent:'',value:'',style:{},classList:{toggle(){},add(){},remove(){}},setAttribute(){},focus(){},select(){},addEventListener(){},showModal(){this.open=true},close(){this.open=false}});return el.get(s)};
+ const element=s=>{if(!el.has(s))el.set(s,{innerHTML:'',textContent:'',value:'',dataset:{},style:{},classList:{toggle(){},add(){},remove(){}},setAttribute(){},focus(){},select(){},addEventListener(){},showModal(){this.open=true},close(){this.open=false}});return el.get(s)};
  const window={Game:require('../dist/game.js'),QUESTION_BANK:[{id:'q',category:'Marketing',prompt:'Name a pricing strategy.',note:'Real pricing strategies.',answers:[['Cost-plus pricing',10]]}],Ocean:{onDepth(){},home(){},enter(){},dive(){return Promise.resolve()},setReduced(){}},BrowserAI:{ready:true,state:'ready',message:'Ready',disable(){},judge(){return new Promise((a,b)=>{resolve=a;reject=b})}},addEventListener(){}};
  class Clock extends Date{static now(){return now}}
  const context={window,document:{querySelector:element,body:element('body'),addEventListener(){}},localStorage:{getItem(){return null},setItem(k,v){saved.value=JSON.parse(v)}},Date:Clock,setInterval(f){intervals.set(++n,f);return n},clearInterval(id){intervals.delete(id)},setTimeout(){},navigator:{},location:{origin:'https://example.test'}};
- window.Game={...window.Game,select:()=>['q']};
+ window.Game={...window.Game,select:()=>Array(7).fill('q')};
  vm.runInNewContext(fs.readFileSync('dist/app.js','utf8'),context);
  element('#start-button').onclick();now+=3100;for(const f of [...intervals.values()])f();
  return {el:element,get run(){return Object.values(saved.value.dailies)[0]},advance(ms){now+=ms;for(const f of [...intervals.values()])f()},pitch(value){element('#answer').value=value;element('#answer-form').onsubmit({preventDefault(){}})},resolve(v){resolve(v)},reject(){reject(new Error('test failure'))},leave(){element('#surface-button').onclick();element('#confirm-leave').onclick()}};
@@ -31,3 +31,21 @@ function backendHarness(gpu){
 test('missing WebGPU automatically loads CPU worker',async()=>{const h=backendHarness();const p=h.ai.enable();await flush();assert.equal(h.workers[0].url,'judge-cpu-worker.js');h.reply(0,true);await p;assert.equal(h.ai.ready,true);assert.equal(h.ai.backend,'CPU')});
 test('GPU load failure automatically retries on CPU',async()=>{const h=backendHarness({requestAdapter:async()=>({features:new Set(['shader-f16'])})});const p=h.ai.enable();await flush();assert.equal(h.workers[0].url,'judge-worker.js');h.reply(0,null,'out of GPU memory');await flush();assert.equal(h.workers[0].terminated,true);assert.equal(h.workers[1].url,'judge-cpu-worker.js');h.reply(1,true);await p;assert.equal(h.ai.backend,'CPU');assert.equal(h.ai.ready,true)});
 test('CPU download cancel cannot become ready later',async()=>{const h=backendHarness();const p=h.ai.enable();await flush();h.ai.disable();await p;h.reply(0,true);assert.equal(h.ai.ready,false);assert.equal(h.ai.state,'off');assert.equal(h.workers[0].terminated,true)});
+// The displayed arithmetic must use awarded points, including a floor crossing.
+test('score breakdown distinguishes answer points, total, and next floor',async()=>{
+ const h=harness();
+ h.pitch('a new rare strategy');
+ h.resolve({accepted:true,answer:'A rare strategy',tier:100,explanation:'Valid strategy'});
+ await flush();
+ assert.equal(h.el('#hud-score').textContent,100);
+ assert.match(h.el('#stage').innerHTML,/0 previous.*100 this answer.*100 total/);
+ assert.match(h.el('#stage').innerHTML,/100 pts to Marketing Studio/);
+ h.el('#next-button').onclick();
+ h.pitch('another valid strategy');
+ h.resolve({accepted:true,answer:'Another strategy',tier:75,explanation:'Valid strategy'});
+ await flush();
+ assert.equal(h.el('#hud-score').textContent,185);
+ assert.match(h.el('#stage').innerHTML,/100 previous.*85 this answer.*185 total/);
+ assert.match(h.el('#stage').innerHTML,/15 pts to Marketing Studio/);
+ assert.doesNotMatch(h.el('#stage').innerHTML,/\$1B|\$1M|\$100K|\$10K/);
+});

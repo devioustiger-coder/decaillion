@@ -1,4 +1,4 @@
-# DECAILLION — v11 Office Ascent
+# DECAILLION — Office Ascent
 
 An editable, static browser game. Original v10 DECAILLION source, enhanced with the user's office pixel-art elevator floors and ascending 100-point milestones. The original chatgpt.site deployment remains unchanged.
 
@@ -17,6 +17,13 @@ npm start
 ```
 
 Open http://localhost:8080. Codespaces can forward port 8080. No API key is required for the optional browser-local AI judging, but downloading a browser model can be large and some devices lack GPU support.
+
+## Interface and scoring
+- Slow background drift and animated room lighting under a full-screen fade to black.
+- Minimal menus, collapsed optional AI setup, and varied prompt entrances.
+- Accepted answers earn 10, 30, 60, 85, or 100 points by curated rarity tier. Skips and timeouts earn 0.
+- A single score out of 700, per-answer point breakdown, and progress toward the next floor.
+- Reduced motion in the menu disables background drift and UI animation.
 
 ## Game progression
 - 0–99: Lobby

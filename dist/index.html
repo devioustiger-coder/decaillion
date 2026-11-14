@@ -2,15 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#071523"><meta name="description" content="Seven DECA-inspired business prompts. Rarer answers climb higher. Ascend the pixel-art tower.">
-  <title>DECAILLION · deals after dark</title><link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#000000"><meta name="description" content="Seven hospitality prompts. Rarer answers earn more points. Climb a floor every 100 points.">
+  <title>DECAILLION · deals after dark</title><link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
-  <canvas id="ocean-world" aria-hidden="true"></canvas><div class="scanlines" aria-hidden="true"></div>
+  <canvas id="ocean-world" aria-hidden="true"></canvas><div class="world-shade" aria-hidden="true"></div><div class="scanlines" aria-hidden="true"></div>
   <header class="toolbar"><button id="menu-button" class="square-button" aria-label="Open menu"><span aria-hidden="true">☰</span></button><div class="toolbar-right"><button id="sound-button" class="square-button" aria-label="Turn sound on" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8h3l4-4v12l-4-4H3z"/><path class="sound-waves" d="M13 6q5 4 0 8M15 3q8 7 0 14"/><path class="sound-muted" d="m13 8 4 4m0-4-4 4"/></svg></button><button id="stats-button" class="square-button" aria-label="Your business statistics"><span aria-hidden="true">▥</span></button></div></header>
-  <div id="hud" class="hud" hidden><div class="hud-box"><span>PORTFOLIO</span><strong id="hud-depth">0<small>pts</small></strong><em id="hud-zone">MAIN STREET</em></div><div class="hud-center"><div id="round-blocks" class="round-blocks" aria-label="Round progress"></div><span id="hud-round">PROMPT 1 OF 7</span></div><div class="hud-box score-box"><span>SCORE</span><strong id="hud-score">0</strong><em>OF 700 PTS</em></div></div>
+  <div id="hud" class="hud" hidden>
+    <div class="hud-box floor-box"><span>CURRENT FLOOR</span><strong id="hud-zone">LOBBY</strong><em id="hud-depth">100 pts to next floor</em><div class="floor-track" role="progressbar" aria-label="Progress to next floor" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="floor-progress"></i></div></div>
+    <div class="hud-center"><div id="round-blocks" class="round-blocks" aria-label="Round progress"></div><span id="hud-round">PROMPT 1 OF 7</span></div>
+    <div class="hud-box score-box"><span>TOTAL SCORE</span><strong><span id="hud-score">0</span><small> / 700</small></strong><em>POINTS</em></div>
+  </div>
   <main id="stage"></main>
   <dialog id="info-dialog"><button class="dialog-close square-button" aria-label="Close dialog">×</button><div id="dialog-content"></div></dialog>
   <div id="toast" role="status"></div><div id="announcer" class="sr-only" aria-live="polite"></div>
-  <script src="questions.js"></script><script src="hospitality.js"></script><script src="game.js"></script><script src="office-backgrounds.js?v=13-visible-rooms"></script><script src="ocean.js?v=13-visible-rooms"></script><script src="browser-ai.js"></script><script src="audio.js"></script><script src="app.js"></script><script src="ui-motion.js"></script>
+  <script src="questions.js"></script><script src="hospitality.js"></script><script src="game.js"></script><script src="office-backgrounds.js?v=14-atmosphere"></script><script src="ocean.js?v=14-atmosphere"></script><script src="browser-ai.js"></script><script src="audio.js"></script><script src="app.js?v=14"></script><script src="ui-motion.js?v=14"></script>
 </body></html>

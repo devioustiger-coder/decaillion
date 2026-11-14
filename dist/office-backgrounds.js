@@ -102,6 +102,12 @@ const levels=[
    // A complete, distinct room is visible on each floor; animation moves it down
    // as the elevator rises to the next room above.
    ctx.drawImage(art,0,Math.round(offset),viewWidth,viewHeight);
+   if(!window.Ocean?.reduced){
+     const t=performance.now()/1000;
+     ctx.globalCompositeOperation='screen';
+     const glow=ctx.createRadialGradient(viewWidth*(.7+Math.sin(t*.13)*.09),offset+viewHeight*.3,0,viewWidth*.72,offset+viewHeight*.3,viewWidth*.6);
+     glow.addColorStop(0,`rgba(116,190,224,${.04+.025*Math.sin(t*.35)})`);glow.addColorStop(1,'rgba(116,190,224,0)');ctx.fillStyle=glow;ctx.fillRect(0,Math.round(offset),viewWidth,viewHeight);
+   }
    ctx.restore();
  }
  window.OfficeBackgrounds={floorNames:ART_FLOOR_NAMES,draw,getCanvas};
